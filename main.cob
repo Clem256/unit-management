@@ -5,6 +5,7 @@ DATA DIVISION.
 WORKING-STORAGE SECTION.
     01 FIN         PIC X VALUE "N".
     01 CHOICE             PIC 99.
+    01 STATS-UPGRADE-PERCENTAGE             PIC 99.
     01 NB-UNITES          PIC 9 VALUE 0.
     01 NAME     PIC X(15).
     01 CLASSE     PIC X(15).
@@ -49,48 +50,47 @@ PROCEDURE DIVISION.
                 MOVE CLASSE TO CLASSE-UNITE(NB-UNITES)
                 ACCEPT LEVEL
                 MOVE LEVEL TO NIVEAU-UNITE(NB-UNITES)
-                WHEN 2
-                    ACCEPT FIND-UNITE
-                    PERFORM VARYING I FROM 1 BY 1 UNTIL I > NB-UNITES
-                        IF FIND-UNITE = NOM-UNITE(I)
-                            IF NIVEAU-UNITE(I) < 20
-                                ADD 1 TO NIVEAU-UNITE(I)
-                                DISPLAY "Niveau augmente ! Lancement de la monte de stats."
-                
-                                DISPLAY "Entrer un chiffre entre 0 et 99 pour le hasard :"
-                                ACCEPT CHOICE
-                
-                                IF CHOICE < 70
-                                    ADD 1 TO HP-UNITE(I)
-                                    DISPLAY "HP +1"
-                                END-IF
-                                IF CHOICE >= 30 AND CHOICE <= 80
-                                    ADD 1 TO ATK-UNITE(I)
-                                    DISPLAY "ATK +1"
-                                END-IF
-                                IF CHOICE > 40
-                                    ADD 1 TO DEF-UNITE(I)
-                                    DISPLAY "DEF +1"
-                                END-IF
-                                IF CHOICE <= 60
-                                    ADD 1 TO SPD-UNITE(I)
-                                    DISPLAY "SPD +1"
-                                END-IF
-                                IF CHOICE > 50
-                                    ADD 1 TO MAG-UNITE(I)
-                                    DISPLAY "MAG +1"
-                                END-IF
-                                IF CHOICE <= 20
-                                    ADD 1 TO LCK-UNITE(I)
-                                    DISPLAY "LCK +1"
-                                END-IF
-                
-                            ELSE
-                                DISPLAY "Level impossible (deja niveau 20)"
-                            END-IF
-                        END-IF
-                    END-PERFORM
 
+            WHEN 2
+                ACCEPT FIND-UNITE
+                PERFORM VARYING I FROM 1 BY 1 UNTIL I > NB-UNITES
+                    IF FIND-UNITE = NOM-UNITE(I)
+                        IF NIVEAU-UNITE(I) < 20
+                            ADD 1 TO NIVEAU-UNITE(I)
+                            COMPUTE STATS-UPGRADE-PERCENTAGE  = FUNCTION RANDOM * 100
+                            IF STATS-UPGRADE-PERCENTAGE  < 70
+                                ADD 1 TO HP-UNITE(I)
+                                DISPLAY "HP +1"
+                            END-IF
+
+                            IF STATS-UPGRADE-PERCENTAGE  < 50
+                                ADD 1 TO ATK-UNITE(I)
+                                DISPLAY "ATK +1"
+                            END-IF
+
+                            IF STATS-UPGRADE-PERCENTAGE  < 40
+                                ADD 1 TO DEF-UNITE(I)
+                                DISPLAY "DEF +1"
+                            END-IF
+
+                            IF STATS-UPGRADE-PERCENTAGE  < 30
+                                ADD 1 TO SPD-UNITE(I)
+                                DISPLAY "SPD +1"
+                            END-IF
+
+                            IF STATS-UPGRADE-PERCENTAGE  < 20
+                                ADD 1 TO MAG-UNITE(I)
+                                DISPLAY "MAG +1"
+                            END-IF
+                            IF STATS-UPGRADE-PERCENTAGE < 10
+                                ADD 1 TO LCK-UNITE(I)
+                                DISPLAY "LCK +1"
+                            END-IF
+                        ELSE
+                            DISPLAY "Level impossible (deja niveau 20)"
+                        END-IF
+                    END-IF
+                END-PERFORM
             WHEN 3
                 ACCEPT FIND-UNITE
                 PERFORM VARYING I FROM 1 BY 1 UNTIL I > NB-UNITES
@@ -102,6 +102,19 @@ PROCEDURE DIVISION.
                         END-IF
                     END-IF
                 END-PERFORM
+
+            WHEN 4
+                ACCEPT FIND-UNITE
+                PERFORM VARYING I FROM 1 BY 1 UNTIL I > NB-UNITES
+                    IF FIND-UNITE = NOM-UNITE(I)
+                        DISPLAY "------------------------------"
+                        DISPLAY "Nom    : " NOM-UNITE(I)
+                        DISPLAY "Classe : " CLASSE-UNITE(I)
+                        DISPLAY "Niveau : " NIVEAU-UNITE(I)
+                        DISPLAY "Hp     : " HP-UNITE(I)
+                    END-IF
+                END-PERFORM
+
             WHEN 5
                 PERFORM VARYING I FROM 1 BY 1 UNTIL I > NB-UNITES
                     DISPLAY "------------------------------"
@@ -109,6 +122,7 @@ PROCEDURE DIVISION.
                     DISPLAY "Classe : " CLASSE-UNITE(I)
                     DISPLAY "Niveau : " NIVEAU-UNITE(I)
                 END-PERFORM
+
             WHEN 6
                 ACCEPT FIND-UNITE
                 PERFORM VARYING I FROM 1 BY 1 UNTIL I > NB-UNITES
@@ -118,6 +132,7 @@ PROCEDURE DIVISION.
                         DISPLAY "Niveau : " NIVEAU-UNITE(I)
                     END-IF
                 END-PERFORM
+
             WHEN 0
                 MOVE "O" TO FIN
             WHEN OTHER
